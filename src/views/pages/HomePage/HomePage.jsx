@@ -1,12 +1,15 @@
 import React from 'react';
+import antd from 'antd';
 import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Button } from 'antd';
+import { userActions, messageActions } from '../../../actions';
 
-import { userActions } from '../_actions';
 
 class HomePage extends React.Component {
     componentDidMount() {
-        this.props.dispatch(userActions.getAll());
+        //this.props.dispatch(userActions.getAll());
     }
 
     handleDeleteUser(id) {
@@ -14,9 +17,11 @@ class HomePage extends React.Component {
     }
 
     render() {
+        console.log('messageActions', messageActions);
         const { user, users } = this.props;
         return (
             <div className="col-md-6 col-md-offset-3">
+                <Button onClick={() => this.props.error('test')}></Button>
                 <h1>Hi {user.firstName}!</h1>
                 <p>You're logged in with React!!</p>
                 <h3>All registered users:</h3>
@@ -44,7 +49,7 @@ class HomePage extends React.Component {
     }
 }
 
-function mapStateToProps(state) {
+const mapStateToProps = state => {
     const { users, authentication } = state;
     const { user } = authentication;
     return {
@@ -53,5 +58,10 @@ function mapStateToProps(state) {
     };
 }
 
-const connectedHomePage = connect(mapStateToProps)(HomePage);
+const matchDispatchToProps = dispatch => ({
+    getAllUsers: ()=> dispatch(userActions.getAll()),
+    error: () => dispatch(messageActions.error())
+})
+
+const connectedHomePage = connect(mapStateToProps, matchDispatchToProps)(HomePage);
 export { connectedHomePage as HomePage };

@@ -1,13 +1,15 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
+import { Router, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { history } from '../_helpers';
-import { alertActions } from '../_actions';
-import { PrivateRoute } from '../_components';
-import { HomePage } from '../HomePage';
-import { LoginPage } from '../LoginPage';
-import { RegisterPage } from '../RegisterPage';
+import { history } from '../helpers';
+import { alertActions } from '../actions';
+import { PrivateRoute } from '../views/components';
+import { HomePage } from '../views/pages/HomePage';
+import { LoginPage } from '../views/pages/LoginPage';
+import { RegisterPage } from '../views/pages/RegisterPage';
+import { MainPage } from '../views/pages/MainPage';
+import NotFoundPage from '../views/pages/NotFoundPage';
 
 class App extends React.Component {
     constructor(props) {
@@ -26,14 +28,33 @@ class App extends React.Component {
             <div className="jumbotron">
                 <div className="container">
                     <div className="col-sm-8 col-sm-offset-2">
-                        {alert.message &&
-                            <div className={`alert ${alert.type}`}>{alert.message}</div>
-                        }
+                        {alert.message && (
+                            <div className={`alert ${alert.type}`}>
+                                {alert.message}
+                            </div>
+                        )}
                         <Router history={history}>
                             <div>
-                                <PrivateRoute exact path="/" component={HomePage} />
-                                <Route path="/login" component={LoginPage} />
-                                <Route path="/register" component={RegisterPage} />
+                                <Switch>
+                                    <PrivateRoute
+                                        exact
+                                        path="/"
+                                        component={HomePage}
+                                    />
+                                    <PrivateRoute
+                                        path="/main"
+                                        component={MainPage}
+                                    />
+                                    <Route
+                                        path="/login"
+                                        component={LoginPage}
+                                    />
+                                    <Route
+                                        path="/register"
+                                        component={RegisterPage}
+                                    />
+                                    <Route component={NotFoundPage} />
+                                </Switch>
                             </div>
                         </Router>
                     </div>
@@ -46,9 +67,9 @@ class App extends React.Component {
 function mapStateToProps(state) {
     const { alert } = state;
     return {
-        alert
+        alert,
     };
 }
 
 const connectedApp = connect(mapStateToProps)(App);
-export { connectedApp as App }; 
+export { connectedApp as App };
